@@ -1,12 +1,12 @@
 import os
 
-INIT_DIR = '/net/nfs.corp/s2-research/scigraph/data/'
+INIT_DIR = '/cl/work/hiroshi-ho/'
 
 class StandardFilePath(object):
     ontoemma_root = 'ontoemma'
     ontoemma_kb_dir = 'kbs'
     ontoemma_missed_file = 'missed.tsv'
-    ontoemma_umls_subset_root = '2017AA_OntoEmma/2017AA/META'
+    ontoemma_umls_subset_root = '2018AB/META'
     ontoemma_umls_output_root = 'umls_output'
     ontoemma_training_root = 'training'
     ontoemma_model_root = 'models'

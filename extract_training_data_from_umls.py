@@ -13,7 +13,7 @@ from emma.paths import StandardFilePath
 from emma.kb.kb_utils_refactor import KBEntity, KBRelation, KnowledgeBase
 from emma.CandidateSelection import CandidateSelection
 import emma.constants as constants
-from emma.OntoEmma import OntoEmma
+#from emma.OntoEmma import OntoEmma
 
 
 # class for extracting concept mappings from UMLS
@@ -107,7 +107,7 @@ class UMLSExtractor(App):
         self.extract_negative_mappings()
 
         sys.stdout.write("Splitting all training data...\n")
-        self.split_training_data()
+        # self.split_training_data()
 
         sys.stdout.write("DONE.\n")
 
@@ -299,7 +299,7 @@ class UMLSExtractor(App):
             kb.dump(kb, os.path.join(self.OUTPUT_KB_DIR, out_fname))
 
             # add context to kb and write to file
-            self.add_context_to_kb(kb)
+            # self.add_context_to_kb(kb)
         return
 
     def sample_negative_mappings(self, kb1, kb2, tp_mappings):
@@ -443,88 +443,88 @@ class UMLSExtractor(App):
             'sib_relations': siblings
         }
 
-    def split_training_data(self):
-        """
-        Process and split data into training development and test sets
-        :return:
-        """
-        all_kb_names = constants.TRAINING_KBS + constants.DEVELOPMENT_KBS
-        training_file_dir = os.path.join(self.OUTPUT_DIR, 'training')
-
-        output_training_data = os.path.join(self.TRAINING_DIR, 'ontoemma.context.train')
-        output_development_data = os.path.join(self.TRAINING_DIR, 'ontoemma.context.dev')
-        output_test_data = os.path.join(self.TRAINING_DIR, 'ontoemma.context.test')
-
-        context_files = glob.glob(os.path.join(self.OUTPUT_KB_DIR, '*context.json'))
-        context_kbs = [os.path.basename(f).split('-')[1] for f in context_files]
-        training_files = glob.glob(os.path.join(training_file_dir, '*.tsv'))
-        file_names = [os.path.splitext(os.path.basename(f))[0] for f in training_files]
-
-        training_labels = []
-        training_dat = []
-
-        emma = OntoEmma()
-
-        for fname, fpath in zip(file_names, training_files):
-            (kb1_name, kb2_name) = fname.split('-')
-            if kb1_name in all_kb_names and kb2_name in all_kb_names \
-                    and kb1_name in context_kbs and kb2_name in context_kbs:
-                sys.stdout.write("Processing %s and %s\n" % (kb1_name, kb2_name))
-                kb1 = emma.load_kb(
-                    os.path.join(self.OUTPUT_KB_DIR, 'kb-{}-context.json'.format(kb1_name))
-                )
-                kb2 = emma.load_kb(
-                    os.path.join(self.OUTPUT_KB_DIR, 'kb-{}-context.json'.format(kb2_name))
-                )
-                alignment = emma.load_alignment(fpath)
-
-                for (e1, e2, score) in alignment:
-                    kb1_ent = kb1.get_entity_by_research_entity_id(e1)
-                    kb2_ent = kb2.get_entity_by_research_entity_id(e2)
-                    training_labels.append(int(score))
-                    training_dat.append({
-                        "source_entity": self._kb_entity_to_training_json(kb1_ent, kb1),
-                        "target_entity": self._kb_entity_to_training_json(kb2_ent, kb2)
-                    })
-            else:
-                sys.stdout.write("Skipping %s and %s\n" % (kb1_name, kb2_name))
-
-        training_dat, test_dat, training_labels, test_labels = train_test_split(
-            training_dat,
-            training_labels,
-            stratify=training_labels,
-            test_size=constants.TEST_PART
-        )
-
-        training_dat, development_dat, training_labels, development_labels = train_test_split(
-            training_dat,
-            training_labels,
-            stratify=training_labels,
-            test_size=constants.DEVELOPMENT_PART
-        )
-
-        training_labels = self._replace_negative_labels(training_labels)
-        development_labels = self._replace_negative_labels(development_labels)
-        test_labels = self._replace_negative_labels(test_labels)
-
-        with jsonlines.open(output_training_data, mode='w') as writer:
-            for label, dat in zip(training_labels, training_dat):
-                writer.write({"label": label,
-                              "source_ent": dat["source_entity"],
-                              "target_ent": dat["target_entity"]})
-
-        with jsonlines.open(output_development_data, mode='w') as writer:
-            for label, dat in zip(development_labels, development_dat):
-                writer.write({"label": label,
-                              "source_ent": dat["source_entity"],
-                              "target_ent": dat["target_entity"]})
-
-        with jsonlines.open(output_test_data, mode='w') as writer:
-            for label, dat in zip(test_labels, test_dat):
-                writer.write({"label": label,
-                              "source_ent": dat["source_entity"],
-                              "target_ent": dat["target_entity"]})
-        return
+    # def split_training_data(self):
+    #     """
+    #     Process and split data into training development and test sets
+    #     :return:
+    #     """
+    #     all_kb_names = constants.TRAINING_KBS + constants.DEVELOPMENT_KBS
+    #     training_file_dir = os.path.join(self.OUTPUT_DIR, 'training')
+    #
+    #     output_training_data = os.path.join(self.TRAINING_DIR, 'ontoemma.context.train')
+    #     output_development_data = os.path.join(self.TRAINING_DIR, 'ontoemma.context.dev')
+    #     output_test_data = os.path.join(self.TRAINING_DIR, 'ontoemma.context.test')
+    #
+    #     context_files = glob.glob(os.path.join(self.OUTPUT_KB_DIR, '*context.json'))
+    #     context_kbs = [os.path.basename(f).split('-')[1] for f in context_files]
+    #     training_files = glob.glob(os.path.join(training_file_dir, '*.tsv'))
+    #     file_names = [os.path.splitext(os.path.basename(f))[0] for f in training_files]
+    #
+    #     training_labels = []
+    #     training_dat = []
+    #
+    #     emma = OntoEmma()
+    #
+    #     for fname, fpath in zip(file_names, training_files):
+    #         (kb1_name, kb2_name) = fname.split('-')
+    #         if kb1_name in all_kb_names and kb2_name in all_kb_names \
+    #                 and kb1_name in context_kbs and kb2_name in context_kbs:
+    #             sys.stdout.write("Processing %s and %s\n" % (kb1_name, kb2_name))
+    #             kb1 = emma.load_kb(
+    #                 os.path.join(self.OUTPUT_KB_DIR, 'kb-{}-context.json'.format(kb1_name))
+    #             )
+    #             kb2 = emma.load_kb(
+    #                 os.path.join(self.OUTPUT_KB_DIR, 'kb-{}-context.json'.format(kb2_name))
+    #             )
+    #             alignment = emma.load_alignment(fpath)
+    #
+    #             for (e1, e2, score) in alignment:
+    #                 kb1_ent = kb1.get_entity_by_research_entity_id(e1)
+    #                 kb2_ent = kb2.get_entity_by_research_entity_id(e2)
+    #                 training_labels.append(int(score))
+    #                 training_dat.append({
+    #                     "source_entity": self._kb_entity_to_training_json(kb1_ent, kb1),
+    #                     "target_entity": self._kb_entity_to_training_json(kb2_ent, kb2)
+    #                 })
+    #         else:
+    #             sys.stdout.write("Skipping %s and %s\n" % (kb1_name, kb2_name))
+    #
+    #     training_dat, test_dat, training_labels, test_labels = train_test_split(
+    #         training_dat,
+    #         training_labels,
+    #         stratify=training_labels,
+    #         test_size=constants.TEST_PART
+    #     )
+    #
+    #     training_dat, development_dat, training_labels, development_labels = train_test_split(
+    #         training_dat,
+    #         training_labels,
+    #         stratify=training_labels,
+    #         test_size=constants.DEVELOPMENT_PART
+    #     )
+    #
+    #     training_labels = self._replace_negative_labels(training_labels)
+    #     development_labels = self._replace_negative_labels(development_labels)
+    #     test_labels = self._replace_negative_labels(test_labels)
+    #
+    #     with jsonlines.open(output_training_data, mode='w') as writer:
+    #         for label, dat in zip(training_labels, training_dat):
+    #             writer.write({"label": label,
+    #                           "source_ent": dat["source_entity"],
+    #                           "target_ent": dat["target_entity"]})
+    #
+    #     with jsonlines.open(output_development_data, mode='w') as writer:
+    #         for label, dat in zip(development_labels, development_dat):
+    #             writer.write({"label": label,
+    #                           "source_ent": dat["source_entity"],
+    #                           "target_ent": dat["target_entity"]})
+    #
+    #     with jsonlines.open(output_test_data, mode='w') as writer:
+    #         for label, dat in zip(test_labels, test_dat):
+    #             writer.write({"label": label,
+    #                           "source_ent": dat["source_entity"],
+    #                           "target_ent": dat["target_entity"]})
+    #     return
 
     @staticmethod
     def _replace_negative_labels(l):
