@@ -103,10 +103,10 @@ class UMLSExtractor(App):
 
         # self.load_mappings_from_file()
 
-        sys.stdout.write("Sampling negative mappings...\n")
-        self.extract_negative_mappings()
+        # sys.stdout.write("Sampling negative mappings...\n")
+        # self.extract_negative_mappings()
 
-        sys.stdout.write("Splitting all training data...\n")
+        # sys.stdout.write("Splitting all training data...\n")
         # self.split_training_data()
 
         sys.stdout.write("DONE.\n")
